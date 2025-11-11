@@ -1,0 +1,12 @@
+services:
+  manim-video-generator:
+    build: .
+    container_name: ai-video-solution
+    volumes:
+      - ./output:/app/output
+    env_file:
+      - .env
+    environment:
+      - PYTHONUNBUFFERED=1
+    stdin_open: true
+    tty: true
