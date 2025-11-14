@@ -17,18 +17,20 @@ async def generate_tts_audio(script: VoiceoverScript, output_path: str) -> str:
     - echo: Male, clear
     - fable: British accent, warm
     - onyx: Deep male voice
-    - nova: Female, energetic
+    - nova: Female, energetic (RECOMMENDED for Hinglish educational content)
     - shimmer: Female, soft
-    - ember: Female, warm and expressive (RECOMMENDED for Hinglish educational content)
+    - ash: New voice option
+    - sage: New voice option
+    - coral: New voice option
     """
 
     print(f"   Generating TTS audio with OpenAI...")
     print(f"   Script length: {len(script.full_script)} characters")
-    print(f"   Voice: ember (Hinglish educational)")
+    print(f"   Voice: nova (Hinglish educational)")
 
     response = client.audio.speech.create(
         model="tts-1-hd",  # Higher quality model
-        voice="ember",     # Best for Hinglish educational content
+        voice="nova",      # Best for Hinglish educational content
         input=script.full_script,
         speed=1.0          # Normal speed
     )
