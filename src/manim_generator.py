@@ -4,7 +4,7 @@ import subprocess
 import ast
 from pathlib import Path
 from openai import OpenAI
-from src.models import SolutionSteps, ManimCode
+from src.models import SolutionSteps, ManimCode, VoiceoverScript
 
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
@@ -631,8 +631,8 @@ Make it realistic and engaging!
 Remember: You're creating a mini-documentary, not a slideshow. Every animation should feel purposeful and engaging."""
 
 
-async def generate_manim_code(solution: SolutionSteps) -> ManimCode:
-    """Generate Manim animation code from solution steps"""
+async def generate_manim_code(solution: SolutionSteps, script: VoiceoverScript) -> ManimCode:
+    """Generate Manim animation code from solution steps and voiceover script"""
 
     # Load sample code for reference
     sample_code = load_sample_manim()
@@ -646,6 +646,15 @@ Duration: {step.duration_seconds} seconds
 Explanation: {step.explanation}
 Equations: {step.equations}
 Visual Elements: {step.key_visual_elements}
+""")
+
+    # Format voiceover script segments for precise timing
+    script_segments = []
+    for i, segment in enumerate(script.segments):
+        script_segments.append(f"""
+Segment {i+1}: {segment.start_time:.2f}s - {segment.end_time:.2f}s ({segment.end_time - segment.start_time:.2f}s)
+Scene: {segment.scene_id}
+Narration: "{segment.text}"
 """)
 
     # Build narrative structure description
@@ -696,12 +705,20 @@ PROBLEM CONTEXT:
 Topic: {solution.analysis.topic}
 Difficulty: {solution.analysis.difficulty}
 Total Duration: {solution.total_duration} seconds
+Audio Duration: {script.total_duration} seconds (MUST match this!)
 Question: {solution.question}
 
 KEY CONCEPTS: {', '.join(solution.analysis.concepts)}
 
 🎬 EXACT SCENE TIMELINE (CRITICAL - Match these timestamps precisely):
 {''.join(timeline_text)}
+
+🎙️ VOICEOVER SCRIPT TIMING (CRITICAL - Sync animations with narration):
+{''.join(script_segments)}
+
+IMPORTANT: The animation timing MUST match the audio duration of {script.total_duration} seconds!
+Each animation should align with the corresponding voiceover segment timing above.
+Use self.wait() to ensure animations stay synchronized with narration.
 
 SOLUTION BREAKDOWN:
 {''.join(steps_description)}
@@ -710,13 +727,15 @@ SOLUTION BREAKDOWN:
 
 CRITICAL REQUIREMENTS:
 ✓ Follow the scene timeline above with EXACT timestamps
-✓ Add timing comments in your code matching the scenes
+✓ SYNC with voiceover segments - animations must match narration timing!
+✓ Total animation duration MUST be exactly {script.total_duration} seconds to match audio
+✓ Add timing comments in your code matching both scenes AND voiceover segments
+✓ Use self.wait() strategically to fill gaps and maintain audio sync
 ✓ MUST include actual motion animation (rolling, flying, oscillating, etc.)
 ✓ Prevent visual overflow - keep all elements within screen bounds
 ✓ Use .scale_to_fit_width(12) for long equations
 ✓ Position info boxes with .to_edge(UR, buff=0.5) to avoid overflow
 ✓ Apply 3Blue1Brown-style polish: gradients, smooth transitions, visual emphasis
-✓ Total duration must be exactly {solution.total_duration} seconds
 ✓ Every animation should serve the story
 
 REFERENCE CODE (study the techniques and style):
@@ -840,12 +859,12 @@ async def render_manim_video(manim_file: str, output_path: str, timeout: int = 6
         return ""
 
 
-async def generate_manim_code_with_retry(solution: SolutionSteps, max_retries: int = 3) -> ManimCode:
+async def generate_manim_code_with_retry(solution: SolutionSteps, script: VoiceoverScript, max_retries: int = 3) -> ManimCode:
     """Generate Manim code with retry logic for invalid syntax"""
     for attempt in range(max_retries):
         print(f"   Generating Manim code (attempt {attempt + 1}/{max_retries})...")
 
-        manim_code = await generate_manim_code(solution)
+        manim_code = await generate_manim_code(solution, script)
 
         if validate_manim_code(manim_code.code):
             print(f"   Valid Manim code generated!")

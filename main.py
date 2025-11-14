@@ -90,10 +90,10 @@ class VideoSolutionGenerator:
         print(f"✅ Audio generated!")
         print()
 
-        # Step 4: Generate Manim code
+        # Step 4: Generate Manim code (with voiceover script for timing sync)
         print(f"🎨 Step 4/6: Generating Manim animation code...")
         print(f"{'-' * 80}")
-        manim_code = await generate_manim_code_with_retry(solution)
+        manim_code = await generate_manim_code_with_retry(solution, script)
         manim_file = self.output_dir / "manim_code" / f"animation_{timestamp}.py"
         manim_code.save_to_file(str(manim_file))
         print(f"✅ Manim code generated!")
