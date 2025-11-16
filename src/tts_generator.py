@@ -1,11 +1,11 @@
 import os
 import subprocess
 from pathlib import Path
-from openai import OpenAI
+from openai import AsyncOpenAI
 from src.models import VoiceoverScript
 
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 
 async def generate_tts_audio(script: VoiceoverScript, output_path: str) -> str:
@@ -44,18 +44,30 @@ Language Style: Natural Hinglish flow—seamlessly mix Hindi and English as comm
 
 Personality Affect: Friendly and approachable with educational authority; speak confidently yet warmly, guiding students through physics problems step-by-step with patience and clarity. Sound like you genuinely care about the student understanding the concept."""
 
-    response = client.audio.speech.create(
-        model="gpt-4o-mini-tts",  # Advanced TTS model with instructions support
-        voice="nova",              # Best for Hinglish educational content
-        input=script.full_script,
-        instructions=instructions   # Custom voice characteristics
-    )
-
     # Ensure output directory exists
     Path(output_path).parent.mkdir(parents=True, exist_ok=True)
 
-    # Stream to file
-    response.stream_to_file(output_path)
+    # Use async streaming with instructions support
+    try:
+        async with client.audio.speech.with_streaming_response.create(
+            model="gpt-4o-mini-tts",  # Advanced TTS model with instructions support
+            voice="nova",              # Best for Hinglish educational content
+            input=script.full_script,
+            instructions=instructions,  # Custom voice characteristics
+            response_format="mp3"       # Output format
+        ) as response:
+            await response.stream_to_file(output_path)
+    except TypeError:
+        # Fallback for older openai versions without instructions support
+        print(f"   Warning: 'instructions' parameter not supported. Update openai library to >=1.59.0")
+        print(f"   Falling back to basic TTS without custom instructions...")
+        async with client.audio.speech.with_streaming_response.create(
+            model="gpt-4o-mini-tts",
+            voice="nova",
+            input=script.full_script,
+            response_format="mp3"
+        ) as response:
+            await response.stream_to_file(output_path)
 
     print(f"   Audio saved to: {output_path}")
 

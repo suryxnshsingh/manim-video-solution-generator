@@ -7,15 +7,33 @@ from src.models import QuestionAnalysis, SolutionStep, SolutionSteps, AnimationS
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 
-SYSTEM_PROMPT = """You are an expert physics and mathematics tutor. Given a problem, generate a detailed step-by-step solution optimized for video explanation.
+SYSTEM_PROMPT = """You are an expert physics and mathematics tutor. Given a problem, generate a VERY DETAILED step-by-step solution optimized for video explanation.
 
 Requirements:
-1. Break solution into 4-7 clear steps
-2. Each step should take 8-15 seconds to explain
-3. Include relevant equations in LaTeX format
-4. Identify key visual elements that should be animated
-5. Keep total duration between 60-120 seconds
-6. Output as structured JSON
+1. Break solution into 8-15 VERY GRANULAR steps (more is better!)
+2. Each step should take 6-12 seconds to explain (account for narration time!)
+3. CRITICAL: Show EVERY intermediate calculation step:
+   - Write the formula
+   - Substitute values
+   - Simplify algebraically (show each simplification)
+   - Calculate final number
+4. Include ALL relevant equations in LaTeX format for each step
+5. Each equation transformation should be its own step
+6. Identify key visual elements that should be animated
+7. Keep total duration between 100-150 seconds (longer to match actual speech duration!)
+8. Output as structured JSON
+
+EXAMPLE of granular breakdown for v = √(2gh):
+Step 1: State energy conservation principle (equation)
+Step 2: Expand energy conservation (mgh = ½mv²)
+Step 3: Cancel mass from both sides (gh = ½v²)
+Step 4: Rearrange for v² (v² = 2gh)
+Step 5: Take square root (v = √(2gh))
+Step 6: Substitute values (v = √(2 × 9.8 × 3))
+Step 7: Simplify inside root (v = √(58.8))
+Step 8: Calculate final answer (v = 7.67 m/s)
+
+THIS IS 8 STEPS for a simple formula - make sure your solutions are similarly detailed!
 
 Output JSON structure:
 {
@@ -30,13 +48,13 @@ Output JSON structure:
         {
             "step_number": 1,
             "title": "Step title",
-            "explanation": "Detailed explanation of this step",
+            "explanation": "Detailed explanation of this step - be verbose and educational!",
             "equations": ["latex equation 1", "latex equation 2"],
             "key_visual_elements": ["element 1", "element 2"],
-            "duration_seconds": 10
+            "duration_seconds": 8
         }
     ],
-    "total_duration": 75
+    "total_duration": 95
 }"""
 
 
@@ -68,17 +86,31 @@ Provide response as JSON with keys: topic, subtopic, difficulty, concepts, prere
 async def generate_solution_steps(question: str) -> SolutionSteps:
     """Generate complete solution with steps optimized for video"""
 
-    user_prompt = f"""Generate a video-optimized solution for this problem:
+    user_prompt = f"""Generate a VERY DETAILED, video-optimized solution for this problem:
 
 {question}
 
-Create a step-by-step solution that:
-- Takes 60-120 seconds total to explain
-- Has 4-7 clear steps
-- Each step has 8-15 second duration
-- Includes LaTeX equations
-- Identifies visual elements to animate (e.g., "inclined plane", "force vectors", "ball")
-- Has engaging explanations suitable for voiceover
+Create a GRANULAR step-by-step solution that:
+- Takes 100-150 seconds total to explain (account for narration speaking time!)
+- Has 8-15 DETAILED steps (break down every calculation!)
+- Each step has 6-12 second duration
+- CRITICAL: Show EVERY intermediate calculation:
+  * Formula statement
+  * Value substitution
+  * Algebraic simplification (each step separately!)
+  * Numerical calculation
+- Includes ALL relevant LaTeX equations for EACH transformation
+- Identifies visual elements to animate (e.g., "inclined plane", "force vectors", "ball", "energy bars")
+- Has engaging, verbose explanations suitable for educational voiceover
+
+IMPORTANT: If a solution involves v = √(2gh), that should be at least 6-8 steps showing:
+1. Energy principle statement
+2. Energy equation expansion
+3. Simplification (cancel terms)
+4. Rearrange for target variable
+5. Substitute numerical values
+6. Simplify calculation
+7. Final numerical answer
 
 Return ONLY valid JSON matching the required structure."""
 

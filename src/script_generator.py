@@ -33,11 +33,14 @@ Examples of BAD (pure English - AVOID):
 Requirements:
 1. Use conversational, friendly Hinglish tone (like a tutor explaining to an Indian student)
 2. Mix Hindi and English naturally - DON'T write pure English
-3. Match exact timing requirements for each segment
-4. Use Hindi transitions: "toh ab" (so now), "dekho" (see), "iske baad" (after this)
-5. Explain concepts clearly in Hinglish
-6. For equations, mix: "v squared equals" → "v squared ka value hai"
-7. Use common Hindi phrases: "yeh samajh mein aaya?" (understood?), "bilkul" (exactly)
+3. CRITICAL: Match exact timing requirements - KEEP SCRIPTS CONCISE!
+4. Speaking rate: Assume ~2.5 words per second for Hinglish narration
+5. Calculate: For a 10-second segment, write MAX 25 words (including Hindi/English)
+6. Use Hindi transitions: "toh ab" (so now), "dekho" (see), "iske baad" (after this)
+7. Explain concepts clearly but BRIEFLY in Hinglish
+8. For equations, mix: "v squared equals" → "v squared ka value hai"
+9. Use common Hindi phrases: "yeh samajh mein aaya?" (understood?), "bilkul" (exactly)
+10. BREVITY IS CRITICAL - shorter scripts fit better with animation timing!
 
 Style guidelines:
 - Start with Hinglish hook: "Chalo solve karte hain...", "Aaj hum dekhenge...", "Toh is problem mein..."
@@ -95,10 +98,13 @@ Requirements:
 - Write in HINGLISH (Hindi + English mix) - NOT pure English!
 - Create ONE segment for EACH scene above
 - Each segment MUST match the exact start/end times of its scene
+- CRITICAL: KEEP SCRIPTS CONCISE! Speaking rate ~2.5 words/second
+- For 10s scene → write MAX 25 words. For 5s scene → MAX 12 words
+- Calculate words carefully: segment duration × 2.5 = max word count
 - Narration must fit precisely within the scene duration
 - Use Hindi connectors: toh, aur, ab, dekho, matlab, kyunki
 - Use English for technical terms: velocity, energy, force, acceleration
-- Make it engaging like Physics Wallah or Unacademy teachers
+- Make it engaging like Physics Wallah or Unacademy teachers - but BRIEF!
 
 Example segment structures (HINGLISH):
 {{

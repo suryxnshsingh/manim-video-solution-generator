@@ -38,7 +38,7 @@ class SolutionSteps(BaseModel):
     question: str
     analysis: QuestionAnalysis
     steps: List[SolutionStep]
-    total_duration: float = Field(ge=60, le=120)
+    total_duration: float = Field(ge=80, le=180)
     # Complete scene timeline for synchronization
     scene_timeline: List[AnimationScene] = []
 
